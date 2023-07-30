@@ -6,11 +6,10 @@ from discord import app_commands
 from main import UtileBot, VERSION_MAJOR, VERSION_MICRO, VERSION_MINOR, get_commands_list
 
 
-HELP_COMMANDS = get_commands_list()
-HELP_COMMANDS_ENUM = enum.Enum('HELP_COMMANDS_ENUMS', {x:x for x in HELP_COMMANDS})
-
-
 class Help(commands.Cog):
+    help_commands: dict = get_commands_list()
+    help_commands_enums : enum.Enum = enum.Enum('HELP_COMMANDS_ENUMS', {x:x for x in help_commands})
+
     def __init__(self, bot: UtileBot):
         self.bot = bot
         self.commands_list = enum.Enum('commands', {command.name: command.name for command in self.bot.tree.walk_commands()})
@@ -21,7 +20,7 @@ class Help(commands.Cog):
 
     @commands.hybrid_command(name="help", with_app_command=True, description="A help command for commands")
     @app_commands.describe(command="(optional) The command name")
-    async def help(self, ctx: commands.Context, command: HELP_COMMANDS_ENUM = None):
+    async def help(self, ctx: commands.Context, command: help_commands_enums = None):
         embed = discord.Embed(title=self.bot.user,
                               description=f"`Prefix: {self.bot.settings['discord']['prefix']}`", color=0xE60012)
         embed.set_thumbnail(url=self.bot.user.avatar)
@@ -29,16 +28,16 @@ class Help(commands.Cog):
 
         if command:
             embed.add_field(name=command.value,
-                            value=f"Description: {HELP_COMMANDS[command.value]['description']}\n"
-                                  f"Parameters: {HELP_COMMANDS[command.value]['parameters']}"
-                                  f"Default Permissions: {HELP_COMMANDS[command.value]['default_permissions']}"
-                                  f"Guild Only: {HELP_COMMANDS[command.value]['guild_only']}"
-                                  f"Extras: {HELP_COMMANDS[command.value]['extras'] if HELP_COMMANDS[command.value]['extras'] else 'No extra informations.'}",
+                            value=f"Description: {self.help_commands[command.value]['description']}\n"
+                                  f"Parameters: {self.help_commands[command.value]['parameters']}"
+                                  f"Default Permissions: {self.help_commands[command.value]['default_permissions']}"
+                                  f"Guild Only: {self.help_commands[command.value]['guild_only']}"
+                                  f"Extras: {self.help_commands[command.value]['extras'] if self.help_commands[command.value]['extras'] else 'No extra informations.'}",
                             inline=False)
         else:
-            for command_name in HELP_COMMANDS:
+            for command_name in self.help_commands:
                 embed.add_field(name=command_name,
-                                value=HELP_COMMANDS[command_name]["description"],
+                                value=self.help_commands[command_name]["description"],
                                 inline=False)
 
         await ctx.reply(embed=embed, ephemeral=True)

@@ -76,10 +76,10 @@ class UtileBot(commands.Bot):
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.reply(f"Sorry {ctx.author.mention}, but your not allowed to use this command in private message", ephemeral=True)
             logging.info(f"Error : No Private Message // {error}")
+        elif isinstance(error, commands.PrivateMessageOnly):
+            await ctx.reply(f"Sorry {ctx.author.mention}, but your not allowed to use this command in servers", ephemeral=True)
         else:
             logging.info(f"Error: Unknown // {error}")
-
-        self.tree.walk_commands()
 
 
 def get_settings():
