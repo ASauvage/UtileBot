@@ -1,7 +1,9 @@
+import enum
 import discord
 import logging
 from discord.ext import commands
-from main import UtileBot
+from discord import app_commands
+from main import UtileBot, extract_commands_data
 
 
 class Owner(commands.Cog):
@@ -12,20 +14,28 @@ class Owner(commands.Cog):
     async def on_ready(self):
             logging.info(f"cogs/owner loaded")
 
-    @commands.command()
+    @commands.hybrid_command(name="sync", with_app_command=True, description="Sync commands with discord (Owner only)")
     async def sync(self, ctx: commands.Context):
         if await self.bot.is_owner(ctx.author):
             logging.info(f"command(s) syncronisation")
             try:
                 synced = await self.bot.tree.sync()
-                await ctx.channel.send(f"Synced {len(synced)} command(s)")
+                await ctx.reply(f"Synced {len(synced)} command(s)")
                 logging.info(f"Synced {len(synced)} command(s)")
             except Exception as e:
-                await ctx.channel.send(e.__str__())
+                await ctx.reply(e.__str__())
 
-    @commands.command()
-    async def find_user(self, ctx: commands.Context, user_id: int):
-        await ctx.send(f'<@{user_id}>')
+    @commands.hybrid_command(name="extract_commands", with_app_command=True, description="Extract information from commands (Owner only)")
+    async def extract_commands(self, ctx: commands.Context):
+        if await self.bot.is_owner(ctx.author):
+            extract_commands_data(self.bot.tree.walk_commands())
+
+            await ctx.reply("Data extract", ephemeral=True)
+
+    @commands.hybrid_command(name="find_user", with_app_command=True, description="Find a person's profile from their id")
+    @app_commands.describe(user="The user id")
+    async def find_user(self, ctx: commands.Context, user: discord.User):
+        await ctx.reply(user.mention)
 
 
 async def setup(bot: UtileBot):

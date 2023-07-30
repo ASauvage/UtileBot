@@ -15,13 +15,14 @@ class Utils(commands.Cog):
     async def on_ready(self):
         logging.info(f"cogs/utils loaded")
 
-    @app_commands.command(name="private")
-    async def private(self, interaction: discord.Interaction, message: str):
+    @commands.hybrid_command(name="private_message", with_app_command=True, description="Send an anonymous message to the server")
+    @app_commands.describe(message="Your anonymous message")
+    async def private_message(self, ctx: commands.Context, message: str):
         embed = discord.Embed(title="Do you confirm your message?", description=message, color=0x221188)
         embed.set_thumbnail(url=self.bot.user.avatar)
-        embed.set_footer(text=encode_id(str(interaction.user.id)))
+        embed.set_footer(text=encode_id(str(ctx.author.id)))
 
-        await interaction.response.send_message(embed=embed)
+        await ctx.reply(embed=embed)
 
 
 def encode_id(id: str) -> str:

@@ -4,6 +4,7 @@ import os
 import discord
 import logging
 from discord.ext import commands
+from discord import app_commands
 from datetime import date
 
 
@@ -40,7 +41,8 @@ class UtileBot(commands.Bot):
         super().__init__(command_prefix=self.settings['discord']['prefix'],
                          help_command=None,
                          intents=intents,
-                         application_id=self.settings['discord']['application_id'])
+                         application_id=self.settings['discord']['application_id'],
+                         tree_cls=app_commands.CommandTree)
 
     async def on_ready(self):
         logging.info("Logged in as {0.user}".format(self))
@@ -48,6 +50,8 @@ class UtileBot(commands.Bot):
         self.logchannel = self.get_channel(self.settings['discord']['log_channel_id'])
 
         await self.change_presence(status=discord.Status.online)
+
+        self.developper = await self.fetch_user(187529417176645632)
 
     async def setup_hook(self):
         """load all Cogs inside "Cogs" folder"""
@@ -58,35 +62,49 @@ class UtileBot(commands.Bot):
 
     async def on_command_error(self, ctx: commands.Context, error):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.channel.send(f"Error: Missing Required Argument // {error}")
-            await ctx.message.delete()
+            await ctx.reply(f"Error: Missing Required Argument // {error}", ephemeral=True)
             logging.info(f"Error: MissingRequiredArgument // {error}")
         elif isinstance(error, commands.BadArgument):
-            await ctx.channel.send(f"Error: Bad Argument // {error}")
-            await ctx.message.delete()
+            await ctx.reply(f"Error: Bad Argument // {error}", ephemeral=True)
             logging.info(f"Error: Bad Argument // {error}")
         elif isinstance(error, commands.MissingPermissions):
-            await ctx.channel.send(f"Error: Missing Permissions// {error}")
-            await ctx.message.delete()
+            await ctx.reply(f"Error: Missing Permissions// {error}", ephemeral=True)
             logging.info(f"Error: Missing Permissions // {error}")
         elif isinstance(error, commands.ChannelNotReadable):
-            await ctx.channel.send(f"Error: Channel Not Readable // {error}")
-            await ctx.message.delete()
+            await ctx.reply(f"Error: Channel Not Readable // {error}", ephemeral=True)
             logging.info(f"Error: Channel Not Readable // {error}")
         elif isinstance(error, commands.NoPrivateMessage):
-            await ctx.channel.send(
-                f"Sorry {ctx.author.mention}, but your not allowed to use this command in private message")
+            await ctx.reply(f"Sorry {ctx.author.mention}, but your not allowed to use this command in private message", ephemeral=True)
             logging.info(f"Error : No Private Message // {error}")
         else:
             logging.info(f"Error: Unknown // {error}")
 
-    async def close(self):
-        await super().close()
+        self.tree.walk_commands()
 
 
 def get_settings():
-    with open(os.path.dirname(__file__) + '/settings.json', 'r') as json_file:
+    with open(os.path.dirname(__file__) + '/files/settings.json', 'r') as json_file:
         return json.load(json_file)
+
+
+def get_commands_list():
+    with open(os.path.dirname(__file__) + '/files/commands.json', 'r') as json_file:
+        return json.load(json_file)
+
+
+def extract_commands_data(commands_list):
+    commands_json = dict()
+
+    for command in commands_list:
+        commands_json[command.name] = {
+            "description": command.description,
+            "parameters": [f"{parameter.name}: {parameter.description}" for parameter in command.parameters],
+            "guild_only": command.guild_only,
+            "extras": command.extras
+        }
+
+    with open(os.path.dirname(__file__) + '/files/commands.json', 'w') as json_file:
+        json.dump(commands_json, json_file, indent=4)
 
 
 async def main(bot: UtileBot, token):

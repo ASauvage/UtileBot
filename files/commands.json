@@ -1,0 +1,44 @@
+{
+    "help": {
+        "description": "\u2026",
+        "parameters": [
+            "command: \u2026"
+        ],
+        "guild_only": false,
+        "extras": {}
+    },
+    "version": {
+        "description": "\u2026",
+        "parameters": [],
+        "guild_only": false,
+        "extras": {}
+    },
+    "sync": {
+        "description": "\u2026",
+        "parameters": [],
+        "guild_only": false,
+        "extras": {}
+    },
+    "extract_commands": {
+        "description": "\u2026",
+        "parameters": [],
+        "guild_only": false,
+        "extras": {}
+    },
+    "find_user": {
+        "description": "\u2026",
+        "parameters": [
+            "user: \u2026"
+        ],
+        "guild_only": false,
+        "extras": {}
+    },
+    "private_message": {
+        "description": "\u2026",
+        "parameters": [
+            "message: \u2026"
+        ],
+        "guild_only": false,
+        "extras": {}
+    }
+}
