@@ -1,42 +1,43 @@
 {
     "help": {
-        "description": "\u2026",
+        "description": "A help command for commands",
         "parameters": [
-            "command: \u2026"
+            "command: (optional) The command name"
         ],
         "guild_only": false,
         "extras": {}
     },
     "version": {
-        "description": "\u2026",
+        "description": "Get informations of the bot",
         "parameters": [],
         "guild_only": false,
         "extras": {}
     },
     "sync": {
-        "description": "\u2026",
+        "description": "Sync commands with discord (Owner only)",
         "parameters": [],
         "guild_only": false,
         "extras": {}
     },
     "extract_commands": {
-        "description": "\u2026",
+        "description": "Extract information from commands (Owner only)",
         "parameters": [],
         "guild_only": false,
         "extras": {}
     },
     "find_user": {
-        "description": "\u2026",
+        "description": "Find a person's profile from their id",
         "parameters": [
-            "user: \u2026"
+            "user: The user id"
         ],
         "guild_only": false,
         "extras": {}
     },
     "private_message": {
-        "description": "\u2026",
+        "description": "Send an anonymous message to the server",
         "parameters": [
-            "message: \u2026"
+            "title: \u2026",
+            "message: Your anonymous message"
         ],
         "guild_only": false,
         "extras": {}
