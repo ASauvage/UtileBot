@@ -1,10 +1,9 @@
 import discord
 import logging
-from base64 import b64encode, b64decode
 from discord.ext import commands
 from discord import app_commands
 from main import UtileBot
-from random import sample
+from common import encode_id, decode_id
 
 
 class Utils(commands.Cog):
@@ -17,9 +16,11 @@ class Utils(commands.Cog):
 
     @commands.hybrid_command(name="private_message", with_app_command=True, description="Send an anonymous message to the server")
     @commands.dm_only()
-    @app_commands.describe(message="Your anonymous message")
+    @app_commands.describe(title="The title of your message", message="Your anonymous message")
     async def private_message(self, ctx: commands.Context, title: str, message: str):
-        embed = discord.Embed(title="Do you confirm your message?", description="**{}**\n{}".format(title, message), color=0x221188)
+        embed = discord.Embed(title="Do you confirm your message?",
+                              description="**{}**\n{}".format(title, message),
+                              color=0x221188)
         embed.set_thumbnail(url=self.bot.user.avatar)
         embed.set_footer(text=encode_id(str(ctx.author.id)))
 
@@ -37,7 +38,33 @@ class Utils(commands.Cog):
             await self.bot.logchannel.create_thread(name=title, content=message)
             stats = "Yes"
 
-        embed.description = "**{}**\n{}\n\nYou selected: {}".format(title, message, stats)
+        embed.set_footer(text="You selected: {}".format(stats))
+        await tmp.edit(view=None, embed=embed)
+
+    @commands.hybrid_command(name="private_message_reply", with_app_command=True, description="Reply to a topic anonymously")
+    @commands.dm_only()
+    @app_commands.describe(thread="The thread id", message="Your anonymous message")
+    async def private_message_reply(self, ctx: commands.Context, thread: discord.Thread, message: str):
+        embed = discord.Embed(title="Do you confirm your message?",
+                              description="**{}**\n{}".format(thread.mention, message),
+                              color=0x221188)
+        embed.set_thumbnail(url=self.bot.user.avatar)
+
+        view = YesCancelView()
+
+        tmp = await ctx.reply(embed=embed, view=view)
+
+        await view.wait()
+
+        stats = "Cancel"
+        if view.foo is None:
+            await ctx.send("You took too long to respond")
+            stats = "Timeout"
+        elif view.foo is True:
+            await thread.send(content=message)
+            stats = "Yes"
+
+        embed.set_footer(text="You selected: {}".format(stats))
         await tmp.edit(view=None, embed=embed)
 
 
@@ -53,27 +80,6 @@ class YesCancelView(discord.ui.View):
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.foo = False
         self.stop()
-
-
-def encode_id(id: str) -> str:
-    id_list = [id[i:i+3] for i in range(0, len(id), 3)]
-    pattern = sample(range(0, 6), 6)
-
-    hashed_id = ''.join([id_list[pattern.index(x)] for x in range(0, 6)])
-
-    hashed_id += ''.join(str(e) for e in pattern)
-
-    return b64encode(hashed_id.encode()).decode()
-
-
-def decode_id(hashed_id: str) -> str:
-    blend_id = b64decode(hashed_id).decode()
-    id_list = [blend_id[i:i + 3] for i in range(0, len(blend_id) - 6, 3)]
-    pattern = [int(blend_id[i:i + 1]) for i in range(len(blend_id) - 6, len(blend_id), 1)]
-
-    id = [id_list[x] for x in pattern]
-
-    return ''.join(id)
 
 
 async def setup(bot: UtileBot):

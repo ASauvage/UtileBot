@@ -3,7 +3,8 @@ import discord
 import logging
 from discord.ext import commands
 from discord import app_commands
-from main import UtileBot, VERSION_MAJOR, VERSION_MICRO, VERSION_MINOR, get_commands_list
+from main import UtileBot, VERSION_MAJOR, VERSION_MICRO, VERSION_MINOR
+from common import get_commands_list
 
 
 class Help(commands.Cog):
@@ -22,17 +23,18 @@ class Help(commands.Cog):
     @app_commands.describe(command="(optional) The command name")
     async def help(self, ctx: commands.Context, command: help_commands_enums = None):
         embed = discord.Embed(title=self.bot.user,
-                              description=f"`Prefix: {self.bot.settings['discord']['prefix']}`", color=0xE60012)
+                              description=f"`Bot Prefix: {self.bot.settings['discord']['prefix']}`", color=0xE60012)
         embed.set_thumbnail(url=self.bot.user.avatar)
         embed.set_footer(text=f"By {self.bot.developper.display_name}")
 
         if command:
             embed.add_field(name=command.value,
-                            value=f"Description: {self.help_commands[command.value]['description']}\n"
-                                  f"Parameters: {self.help_commands[command.value]['parameters']}"
-                                  f"Default Permissions: {self.help_commands[command.value]['default_permissions']}"
-                                  f"Guild Only: {self.help_commands[command.value]['guild_only']}"
-                                  f"Extras: {self.help_commands[command.value]['extras'] if self.help_commands[command.value]['extras'] else 'No extra informations.'}",
+                            value="__Description__: {}\n__Parameter(s)__:\n- {}\n__Guild Only__: {}\n__Extras__: {}".format(
+                                self.help_commands[command.value]['description'],
+                               '\n- '.join(self.help_commands[command.value]['parameters']) if self.help_commands[command.value]['parameters'] else 'No parameter',
+                               self.help_commands[command.value]['guild_only'],
+                               self.help_commands[command.value]['extras'] if self.help_commands[command.value]['extras'] else 'No extra informations.'
+                            ),
                             inline=False)
         else:
             for command_name in self.help_commands:

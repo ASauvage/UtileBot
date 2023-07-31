@@ -3,7 +3,8 @@ import discord
 import logging
 from discord.ext import commands
 from discord import app_commands
-from main import UtileBot, extract_commands_data
+from main import UtileBot
+from common import extract_commands_data
 
 
 class Owner(commands.Cog):

@@ -1,11 +1,11 @@
 import asyncio
-import json
 import os
 import discord
 import logging
 from discord.ext import commands
 from discord import app_commands
 from datetime import date
+from common import get_settings
 
 
 VERSION_MAJOR = 1
@@ -80,31 +80,6 @@ class UtileBot(commands.Bot):
             await ctx.reply(f"Sorry {ctx.author.mention}, but your not allowed to use this command in servers", ephemeral=True)
         else:
             logging.info(f"Error: Unknown // {error}")
-
-
-def get_settings():
-    with open(os.path.dirname(__file__) + '/files/settings.json', 'r') as json_file:
-        return json.load(json_file)
-
-
-def get_commands_list():
-    with open(os.path.dirname(__file__) + '/files/commands.json', 'r') as json_file:
-        return json.load(json_file)
-
-
-def extract_commands_data(commands_list):
-    commands_json = dict()
-
-    for command in commands_list:
-        commands_json[command.name] = {
-            "description": command.description,
-            "parameters": [f"{parameter.name}: {parameter.description}" for parameter in command.parameters],
-            "guild_only": command.guild_only,
-            "extras": command.extras
-        }
-
-    with open(os.path.dirname(__file__) + '/files/commands.json', 'w') as json_file:
-        json.dump(commands_json, json_file, indent=4)
 
 
 async def main(bot: UtileBot, token):
