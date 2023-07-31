@@ -3,6 +3,7 @@ import logging
 from discord.ext import commands
 from discord import app_commands
 from main import UtileBot
+from views import YesCancelView
 from common import encode_id, decode_id
 
 
@@ -66,20 +67,6 @@ class Utils(commands.Cog):
 
         embed.set_footer(text="You selected: {}".format(stats))
         await tmp.edit(view=None, embed=embed)
-
-
-class YesCancelView(discord.ui.View):
-    foo : bool = None
-
-    @discord.ui.button(label="Yes", style=discord.ButtonStyle.success)
-    async def yes(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.foo = True
-        self.stop()
-
-    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red)
-    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.foo = False
-        self.stop()
 
 
 async def setup(bot: UtileBot):
