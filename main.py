@@ -18,11 +18,11 @@ class UtileBot(commands.Bot):
         # Variable
         self.settings = get_settings()
         self.path = os.path.dirname(__file__) + "/"
-        self.logchannel = None
+        self.private_message_forum = None
 
 
         # Intents
-        intents = discord.Intents.default()
+        intents = discord.Intents.all()
         intents.message_content = True
         intents.messages = True
         intents.dm_messages = True
@@ -47,11 +47,14 @@ class UtileBot(commands.Bot):
     async def on_ready(self):
         logging.info("Logged in as {0.user}".format(self))
         print("logged in as {0.user}".format(self))
-        self.logchannel = self.get_channel(self.settings['discord']['log_channel_id'])
-
-        await self.change_presence(status=discord.Status.online)
 
         self.developper = await self.fetch_user(187529417176645632)
+        self.welcome_channel = self.get_channel(self.settings['discord']['channel_configurations']['welcome_channel_id'])
+        self.admin_log_channel = self.get_channel(self.settings['discord']['channel_configurations']['admin_log_channel_id'])
+        self.private_message_forum = self.get_channel(self.settings['discord']['channel_configurations']['private_forum_id'])
+
+
+        await self.change_presence(status=discord.Status.online)
 
     async def setup_hook(self):
         """load all Cogs inside "Cogs" folder"""

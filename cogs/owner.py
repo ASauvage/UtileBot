@@ -16,6 +16,7 @@ class Owner(commands.Cog):
             logging.info(f"cogs/owner loaded")
 
     @commands.hybrid_command(name="sync", with_app_command=True, description="Sync commands with discord (Owner only)")
+    @commands.has_permissions(administrator=True)
     async def sync(self, ctx: commands.Context):
         if await self.bot.is_owner(ctx.author):
             logging.info(f"command(s) syncronisation")
@@ -25,16 +26,22 @@ class Owner(commands.Cog):
                 logging.info(f"Synced {len(synced)} command(s)")
             except Exception as e:
                 await ctx.reply(e.__str__())
+        else:
+            raise commands.MissingPermissions(missing_permissions=['owner'])
 
     @commands.hybrid_command(name="extract_commands", with_app_command=True, description="Extract information from commands (Owner only)")
+    @commands.has_permissions(administrator=True)
     async def extract_commands(self, ctx: commands.Context):
         if await self.bot.is_owner(ctx.author):
             extract_commands_data(self.bot.tree.walk_commands())
 
             await ctx.reply("Data extract", ephemeral=True)
+        else:
+            raise commands.MissingPermissions(missing_permissions=['owner'])
 
     @commands.hybrid_command(name="find_user", with_app_command=True, description="Find a person's profile from their id")
     @app_commands.describe(user="The user id")
+    @commands.has_permissions(administrator=True)
     async def find_user(self, ctx: commands.Context, user: discord.User):
         await ctx.reply(user.mention)
 

@@ -36,7 +36,16 @@
     "private_message": {
         "description": "Send an anonymous message to the server",
         "parameters": [
-            "title: \u2026",
+            "title: The title of your message",
+            "message: Your anonymous message"
+        ],
+        "guild_only": false,
+        "extras": {}
+    },
+    "private_message_reply": {
+        "description": "Reply to a topic anonymously",
+        "parameters": [
+            "thread: The thread id",
             "message: Your anonymous message"
         ],
         "guild_only": false,

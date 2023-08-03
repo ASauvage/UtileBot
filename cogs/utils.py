@@ -3,7 +3,7 @@ import logging
 from discord.ext import commands
 from discord import app_commands
 from main import UtileBot
-from views import YesCancelView
+from views.default_views import YesCancelView
 from common import encode_id, decode_id
 
 
@@ -36,7 +36,7 @@ class Utils(commands.Cog):
             await ctx.send("You took too long to respond")
             stats = "Timeout"
         elif view.foo is True:
-            await self.bot.logchannel.create_thread(name=title, content=message)
+            await self.bot.private_message_forum.create_thread(name=title, content=message)
             stats = "Yes"
 
         embed.set_footer(text="You selected: {}".format(stats))
